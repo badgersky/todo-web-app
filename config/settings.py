@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
 
     # my apps
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,5 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.CustomUser'
