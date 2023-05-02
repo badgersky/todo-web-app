@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -41,3 +41,10 @@ class RegistrationView(View):
             return redirect(reverse('home:home'))
 
         return render(request, 'users/registration.html', {'form': form})
+
+
+class LogoutView(View):
+
+    def get(self, request):
+        logout(request)
+        return redirect(reverse('home:home'))
