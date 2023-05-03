@@ -19,6 +19,7 @@ class AddTaskForm(forms.ModelForm):
     )
 
     description = forms.CharField(
+        required=False,
         label='Task Description',
         widget=forms.TextInput(attrs={
             'name': 'description',
