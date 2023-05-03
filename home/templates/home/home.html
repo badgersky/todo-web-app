@@ -7,5 +7,26 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Home Page</h2>
+    <div class="card mt-3">
+        <h5 class="card-header bg-dark text-light">Add Task</h5>
+        <div class="card-body">
+            <h6 class="card-text">Add tasks to your calendar.</h6>
+            {% if user.is_authenticated %}
+                <a href="{% url 'tasks:add' %}" class="btn btn-danger">Add task</a>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-danger">Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card mt-3">
+        <h5 class="card-header bg-dark text-light">Display Tasks</h5>
+        <div class="card-body">
+            <h6 class="card-text">Display your tasks, delete past tasks.</h6>
+            {% if user.is_authenticated %}
+                <a href="{% url 'tasks:list' %}" class="btn btn-danger">Display Tasks</a>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-danger">Login</a>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
