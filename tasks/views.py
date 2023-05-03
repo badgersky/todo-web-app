@@ -46,6 +46,8 @@ class DisplayTasks(View):
             tasks = models.Task.objects.filter(user_id=request.user.id).order_by('date')
             return render(request, 'tasks/list-tasks.html', {'tasks': tasks, 'today': today})
 
+        return redirect(reverse('users:login'))
+
 
 class DeleteTask(View):
 
