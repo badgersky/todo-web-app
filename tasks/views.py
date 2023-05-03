@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -44,7 +45,12 @@ class DisplayTasks(View):
             today = datetime.date.today()
 
             tasks = models.Task.objects.filter(user_id=request.user.id).order_by('date')
-            return render(request, 'tasks/list-tasks.html', {'tasks': tasks, 'today': today})
+            paginator = Paginator(tasks, 25)
+
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+
+            return render(request, 'tasks/list-tasks.html', {'tasks': page_obj, 'today': today})
 
         return redirect(reverse('users:login'))
 
