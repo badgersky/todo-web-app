@@ -7,5 +7,41 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Home Page</h2>
+    {% if tasks %}
+        <div class="card mt-3">
+            <h5 class="card-header bg-dark text-light">
+                {% if tasks|length == 1 %}
+                    You have {{ tasks|length }} task for today.
+                {% else %}
+                    You have {{ tasks|length }} tasks for today.
+                {% endif %}
+            </h5>
+            <div class="card-body">
+                <a class="btn btn-danger" href="{% url 'tasks:list' %}">Show Me</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card mt-3">
+        <h5 class="card-header bg-dark text-light">Add Task</h5>
+        <div class="card-body">
+            <h6 class="card-text">Add tasks to your calendar.</h6>
+            {% if user.is_authenticated %}
+                <a href="{% url 'tasks:add' %}" class="btn btn-danger">Add task</a>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-danger">Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card mt-3">
+        <h5 class="card-header bg-dark text-light">Display Tasks</h5>
+        <div class="card-body">
+            <h6 class="card-text">Display your tasks, delete past tasks.</h6>
+            {% if user.is_authenticated %}
+                <a href="{% url 'tasks:list' %}" class="btn btn-danger">Display Tasks</a>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-danger">Login</a>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

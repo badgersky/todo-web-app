@@ -19,6 +19,7 @@ class AddTaskForm(forms.ModelForm):
     )
 
     description = forms.CharField(
+        required=False,
         label='Task Description',
         widget=forms.TextInput(attrs={
             'name': 'description',
@@ -41,7 +42,11 @@ class AddTaskForm(forms.ModelForm):
     def clean_date(self):
         date = self.cleaned_data.get('date')
 
-        if date <= datetime.date.today():
+        if date < datetime.date.today():
             raise ValidationError(f'You cannot input date from the past')
 
         return date
+
+
+class EditTaskForm(AddTaskForm):
+    pass
