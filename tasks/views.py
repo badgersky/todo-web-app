@@ -1,3 +1,6 @@
+import datetime
+
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -32,3 +35,13 @@ class AddTask(View):
             return redirect(reverse('home:home'))
 
         return render(request, 'tasks/add-task.html', {'form': form})
+
+
+class DisplayTasks(View):
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            today = datetime.date.today()
+
+            tasks = models.Task.objects.filter(user_id=request.user.id).order_by('date')
+            return render(request, 'tasks/list-tasks.html', {'tasks': tasks, 'today': today})

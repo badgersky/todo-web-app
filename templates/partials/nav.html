@@ -19,6 +19,9 @@
                         <a class="nav-link" href="{% url 'tasks:add' %}">Add Task</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'tasks:list' %}">Display Tasks</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'users:logout' %}">Logout</a>
                     </li>
                 {% else %}
