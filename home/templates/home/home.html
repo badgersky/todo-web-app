@@ -7,6 +7,21 @@
 {% endblock %}
 
 {% block content %}
+    {% if tasks %}
+        <div class="card mt-3">
+            <h5 class="card-header bg-dark text-light">
+                {% if tasks|length == 1 %}
+                    You have {{ tasks|length }} task for today.
+                {% else %}
+                    You have {{ tasks|length }} tasks for today.
+                {% endif %}
+            </h5>
+            <div class="card-body">
+                <a class="btn btn-danger" href="{% url 'tasks:list' %}">Show Me</a>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="card mt-3">
         <h5 class="card-header bg-dark text-light">Add Task</h5>
         <div class="card-body">
