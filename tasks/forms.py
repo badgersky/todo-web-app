@@ -2,7 +2,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from . import models
 import datetime
-from users.models import CustomUser
 
 
 class DateInput(forms.DateInput):
