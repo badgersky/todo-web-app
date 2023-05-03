@@ -45,3 +45,7 @@ class AddTaskForm(forms.ModelForm):
             raise ValidationError(f'You cannot input date from the past')
 
         return date
+
+
+class EditTaskForm(AddTaskForm):
+    pass

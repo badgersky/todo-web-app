@@ -57,3 +57,33 @@ class DeleteTask(View):
         else:
             task.delete()
             return redirect(reverse('tasks:list'))
+
+
+class EditTask(View):
+
+    def get(self, request, task_id):
+        try:
+            task = models.Task.objects.get(pk=task_id)
+        except models.Task.DoesNotExist:
+            return redirect(reverse('tasks:list'))
+
+        form = forms.EditTaskForm(data={'title': task.title, 'description': task.description, 'date': task.date})
+        return render(request, 'tasks/edit-task.html', {'form': form})
+
+    def post(self, request, task_id):
+        form = forms.EditTaskForm(request.POST)
+
+        if form.is_valid():
+            try:
+                task = models.Task.objects.get(pk=task_id)
+            except models.Task.DoesNotExist:
+                return redirect(reverse('tasks:list'))
+            else:
+                task.date = form.cleaned_data.get('date')
+                task.title = form.cleaned_data.get('title')
+                task.description = form.cleaned_data.get('description')
+
+                task.save()
+                return redirect(reverse('tasks:list'))
+
+        return render(request, 'tasks/edit-task.html', {'form': form})

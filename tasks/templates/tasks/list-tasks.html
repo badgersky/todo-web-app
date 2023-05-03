@@ -18,7 +18,12 @@
                         <button class="badge bg-danger">Delete</button>
                     </a>
                 {% endif %}
-                <a href=""><button class="badge bg-danger">{{ task.date }}</button></a>
+                <a href="{% url 'tasks:edit' task_id=task.id %}">
+                    <button class="badge bg-danger">Edit</button>
+                </a>
+                <a href="">
+                    <button class="badge bg-danger">{{ task.date }}</button>
+                </a>
             </li>
         {% endfor %}
     </ol>
