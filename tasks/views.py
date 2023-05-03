@@ -45,3 +45,15 @@ class DisplayTasks(View):
 
             tasks = models.Task.objects.filter(user_id=request.user.id).order_by('date')
             return render(request, 'tasks/list-tasks.html', {'tasks': tasks, 'today': today})
+
+
+class DeleteTask(View):
+
+    def get(self, request, task_id):
+        try:
+            task = models.Task.objects.get(pk=int(task_id))
+        except models.Task.DoesNotExist:
+            return redirect(reverse('tasks:list'))
+        else:
+            task.delete()
+            return redirect(reverse('tasks:list'))

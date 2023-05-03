@@ -14,7 +14,9 @@
                     {{ task.description }}
                 </div>
                 {% if today >= task.date %}
-                    <a href=""><button class="badge bg-danger">Delete</button></a>
+                    <a href="{% url 'tasks:delete' task_id=task.id %}">
+                        <button class="badge bg-danger">Delete</button>
+                    </a>
                 {% endif %}
                 <a href=""><button class="badge bg-danger">{{ task.date }}</button></a>
             </li>
