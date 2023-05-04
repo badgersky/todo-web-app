@@ -99,7 +99,7 @@ class DeletePastTasks(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            tasks = models.Task.objects.filter(date__lt=datetime.date.today())
+            tasks = models.Task.objects.filter(date__lt=datetime.date.today(), user=request.user)
 
             tasks.delete()
             return redirect(reverse('tasks:list'))
