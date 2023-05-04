@@ -93,3 +93,15 @@ class EditTask(View):
                 return redirect(reverse('tasks:list'))
 
         return render(request, 'tasks/edit-task.html', {'form': form})
+
+
+class DeletePastTasks(View):
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            tasks = models.Task.objects.filter(date__lt=datetime.date.today())
+
+            tasks.delete()
+            return redirect(reverse('tasks:list'))
+
+        return redirect(reverse('users:login'))

@@ -6,6 +6,11 @@
 {% endblock %}
 
 {% block content %}
+    
+    <a href="{% url 'tasks:delete-many' %}">
+        <button type="button" class="btn btn-danger mt-3">Delete Past Tasks</button>
+    </a>
+
     <ul class="list-group mt-3 mb-3">
         {% for task in page_obj %}
             <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -50,7 +55,7 @@
                     </button>
                 </a>
             </li>
-        
+
             {% if page_obj.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
