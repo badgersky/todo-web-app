@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block title %}
-    Tasks
+    page_obj
 {% endblock %}
 
 {% block content %}
-    <ol class="list-group list-group-numbered mt-3 mb-3">
-        {% for task in tasks %}
+    <ul class="list-group mt-3 mb-3">
+        {% for task in page_obj %}
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold">{{ task.title }}</div>
@@ -26,23 +26,43 @@
                 </a>
             </li>
         {% endfor %}
-    </ol>
+    </ul>
 
-    <div class="pagination">
-    <span class="step-links">
-        {% if tasks.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ tasks.previous_page_number }}">previous</a>
-        {% endif %}
+    <nav aria-label="Page navigation example mt-5 mb-5">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="Previous">
+                        <button class="badge bg-danger">First</button>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <button class="badge bg-danger">&laquo;</button>
+                    </a>
+                </li>
+            {% endif %}
 
-        <span class="current">
-            Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}.
-        </span>
-
-        {% if tasks.has_next %}
-            <a href="?page={{ tasks.next_page_number }}">next</a>
-            <a href="?page={{ tasks.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-    </div>
+            <li class="page-item">
+                <a class="page-link ">
+                    <button class="badge bg-danger">
+                        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </button>
+                </a>
+            </li>
+        
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <button class="badge bg-danger">&raquo;</button>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <button class="badge bg-danger">Last</button>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 {% endblock %}
