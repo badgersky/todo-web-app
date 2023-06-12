@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView
@@ -70,4 +70,3 @@ class DeletePastTasks(LoginRequiredMixin, View):
 
         tasks.delete()
         return redirect(reverse('tasks:list'))
-
