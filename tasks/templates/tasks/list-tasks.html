@@ -18,7 +18,10 @@
                 <div class="fw-bold">{{ task.title }}</div>
                 {{ task.description }}
             </div>
-            {% if today >= task.date %}
+            <a href="{% url 'tasks:mark-done' pk=task.id %}">
+                <button class="badge bg-danger">Mark as Done</button>
+            </a>
+            {% if today >= task.date or task.is_done %}
                 <a href="{% url 'tasks:delete' pk=task.id %}">
                     <button class="badge bg-danger">Delete</button>
                 </a>

@@ -10,4 +10,5 @@ urlpatterns = [
     path('delete/<pk>/', views.DeleteTask.as_view(), name='delete'),
     path('edit/<pk>/', views.EditTask.as_view(), name='edit'),
     path('delete/', views.DeletePastTasks.as_view(), name='delete-many'),
+    path('mark-done/<pk>/', views.MarkAsDone.as_view(), name='mark-done')
 ]
