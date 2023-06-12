@@ -13,7 +13,6 @@ from tasks.permissions import TaskCreatorRequiredMixin
 
 
 class AddTask(LoginRequiredMixin, CreateView):
-
     login_url = reverse_lazy('users:login')
     form_class = AddTaskForm
     template_name = 'tasks/add-task.html'
@@ -25,7 +24,6 @@ class AddTask(LoginRequiredMixin, CreateView):
 
 
 class DisplayTasks(LoginRequiredMixin, ListView):
-
     login_url = reverse_lazy('users:login')
     model = Task
     template_name = 'tasks/list-tasks.html'
@@ -57,7 +55,6 @@ class DeleteTask(LoginRequiredMixin, TaskCreatorRequiredMixin, View):
 
 
 class EditTask(LoginRequiredMixin, TaskCreatorRequiredMixin, UpdateView):
-
     template_name = 'tasks/edit-task.html'
     model = Task
     form_class = EditTaskForm
@@ -65,13 +62,12 @@ class EditTask(LoginRequiredMixin, TaskCreatorRequiredMixin, UpdateView):
     login_url = reverse_lazy('users:login')
 
 
-class DeletePastTasks(View):
+class DeletePastTasks(LoginRequiredMixin, View):
+    login_url = reverse_lazy('users:login')
 
     def get(self, request):
-        if request.user.is_authenticated:
-            tasks = models.Task.objects.filter(date__lt=datetime.date.today(), user=request.user)
+        tasks = Task.objects.filter(date__lt=datetime.date.today(), user=request.user)
 
-            tasks.delete()
-            return redirect(reverse('tasks:list'))
+        tasks.delete()
+        return redirect(reverse('tasks:list'))
 
-        return redirect(reverse('users:login'))
