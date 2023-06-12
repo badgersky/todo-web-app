@@ -80,3 +80,13 @@ class MarkAsDone(LoginRequiredMixin, TaskCreatorRequiredMixin, View):
         task.is_done = True
         task.save()
         return redirect(reverse('tasks:list'))
+
+
+class DeleteDoneTasks(LoginRequiredMixin, View):
+    login_url = reverse_lazy('users:login')
+
+    def get(self, request):
+        tasks = Task.objects.filter(is_done=True, user=request.user)
+
+        tasks.delete()
+        return redirect(reverse('tasks:list'))
