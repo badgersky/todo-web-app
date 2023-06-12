@@ -38,7 +38,7 @@ class RegistrationView(View):
 
         if form.is_valid():
             form.save()
-            return redirect(reverse('home:home'))
+            return redirect(reverse('users:login'))
 
         return render(request, 'users/registration.html', {'form': form})
 
