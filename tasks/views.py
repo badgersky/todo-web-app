@@ -5,9 +5,10 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 
 from tasks.forms import AddTaskForm
+from tasks.models import Task
 
 
 class AddTask(LoginRequiredMixin, CreateView):
@@ -17,22 +18,29 @@ class AddTask(LoginRequiredMixin, CreateView):
     template_name = 'tasks/add-task.html'
     success_url = reverse_lazy('tasks:list')
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-class DisplayTasks(View):
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            today = datetime.date.today()
+class DisplayTasks(LoginRequiredMixin, ListView):
 
-            tasks = models.Task.objects.filter(user_id=request.user.id).order_by('date')
-            paginator = Paginator(tasks, 25)
+    login_url = reverse_lazy('users:login')
+    model = Task
+    template_name = 'tasks/list-tasks.html'
 
-            page_number = request.GET.get('page')
-            page_obj = paginator.get_page(page_number)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        today = datetime.date.today()
 
-            return render(request, 'tasks/list-tasks.html', {'page_obj': page_obj, 'today': today})
+        tasks = Task.objects.filter(user=self.request.user)
+        paginator = Paginator(tasks, 20)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
 
-        return redirect(reverse('users:login'))
+        context['today'] = today
+        context['page_obj'] = page_obj
+        return context
 
 
 class DeleteTask(View):
