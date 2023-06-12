@@ -36,14 +36,6 @@ class RegistrationForm(forms.ModelForm):
         })
     )
 
-    email = forms.EmailField(
-        label='Email Address',
-        widget=forms.EmailInput(attrs={
-            'name': 'email',
-            'placeholder': 'Email Address',
-        })
-    )
-
     password = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={
@@ -62,7 +54,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'password', 'confirm_password')
+        fields = ('username', 'password', 'confirm_password')
 
     def clean_confirm_password(self):
         password = self.cleaned_data.get('password')
@@ -74,14 +66,6 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError(f'Password don`t match')
 
         return confirm_password
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-
-        if models.CustomUser.objects.filter(email=email).exists():
-            raise ValidationError(f'Try using different email')
-
-        return email
 
     def clean_username(self):
         username = self.cleaned_data.get('username')

@@ -7,29 +7,38 @@
 
 {% block content %}
 
-    <a href="{% url 'tasks:delete-many' %}">
-        <button type="button" class="btn btn-danger mt-3">Delete Past Tasks</button>
+    <a href="{% url 'tasks:delete-past' %}" class="me-2">
+        <button type="button" class="btn btn-danger mt-3">Delete Past and Today Tasks</button>
+    </a>
+    <a href="{% url 'tasks:delete-done' %}" class="ms-2">
+        <button type="button" class="btn btn-danger mt-3">Delete Done Tasks</button>
     </a>
 
     <ul class="list-group mt-3 mb-3">
         {% for task in page_obj %}
             <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                    <div class="fw-bold">{{ task.title }}</div>
-                    {{ task.description }}
-                </div>
-                {% if today >= task.date %}
-                    <a href="{% url 'tasks:delete' task_id=task.id %}">
-                        <button class="badge bg-danger">Delete</button>
-                    </a>
-                {% endif %}
-                <a href="{% url 'tasks:edit' task_id=task.id %}">
+            <div class="ms-2 me-auto">
+                <div class="fw-bold">{{ task.title }}</div>
+                {{ task.description }}
+            </div>
+            {% if not task.is_done %}
+                <a href="{% url 'tasks:mark-done' pk=task.id %}">
+                    <button class="badge bg-danger">Mark as Done</button>
+                </a>
+                <a href="{% url 'tasks:edit' pk=task.id %}">
                     <button class="badge bg-danger">Edit</button>
                 </a>
-                <a href="">
-                    <button class="badge bg-danger">{{ task.date }}</button>
+            {% endif %}
+            {% if today >= task.date or task.is_done %}
+                <a href="{% url 'tasks:delete' pk=task.id %}">
+                    <button class="badge bg-danger">Delete</button>
                 </a>
-            </li>
+            {% endif %}
+            <a>
+                <button class="badge bg-danger">{{ task.date }}</button>
+            </a>
+        {% empty %}
+            <h3>You have no tasks</h3>
         {% endfor %}
     </ul>
 

@@ -1,107 +1,92 @@
 import datetime
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from . import forms
-from . import models
+from django.views.generic import CreateView, ListView, UpdateView
+
+from tasks.forms import AddTaskForm, EditTaskForm
+from tasks.models import Task
+from tasks.permissions import TaskCreatorRequiredMixin
 
 
-class AddTask(View):
+class AddTask(LoginRequiredMixin, CreateView):
+    login_url = reverse_lazy('users:login')
+    form_class = AddTaskForm
+    template_name = 'tasks/add-task.html'
+    success_url = reverse_lazy('tasks:list')
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            form = forms.AddTaskForm
-            return render(request, 'tasks/add-task.html', {'form': form})
-
-        return redirect(reverse('users:login'))
-
-    def post(self, request):
-        form = forms.AddTaskForm(request.POST)
-
-        if form.is_valid():
-            user = request.user
-            date = form.cleaned_data.get('date')
-            title = form.cleaned_data.get('title')
-            description = form.cleaned_data.get('description')
-
-            new_task = models.Task()
-            new_task.date = date
-            new_task.user = user
-            new_task.title = title
-            new_task.description = description
-            new_task.save()
-            return redirect(reverse('home:home'))
-
-        return render(request, 'tasks/add-task.html', {'form': form})
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
-class DisplayTasks(View):
+class DisplayTasks(LoginRequiredMixin, ListView):
+    login_url = reverse_lazy('users:login')
+    model = Task
+    template_name = 'tasks/list-tasks.html'
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            today = datetime.date.today()
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        today = datetime.date.today()
 
-            tasks = models.Task.objects.filter(user_id=request.user.id).order_by('date')
-            paginator = Paginator(tasks, 25)
+        tasks = Task.objects.filter(user=self.request.user)
+        paginator = Paginator(tasks, 20)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
 
-            page_number = request.GET.get('page')
-            page_obj = paginator.get_page(page_number)
-
-            return render(request, 'tasks/list-tasks.html', {'page_obj': page_obj, 'today': today})
-
-        return redirect(reverse('users:login'))
+        context['today'] = today
+        context['page_obj'] = page_obj
+        return context
 
 
-class DeleteTask(View):
+class DeleteTask(LoginRequiredMixin, TaskCreatorRequiredMixin, View):
 
-    def get(self, request, task_id):
+    def get(self, request, pk):
         try:
-            task = models.Task.objects.get(pk=int(task_id))
-        except models.Task.DoesNotExist:
+            task = Task.objects.get(pk=int(pk))
+        except Task.DoesNotExist:
             return redirect(reverse('tasks:list'))
         else:
             task.delete()
             return redirect(reverse('tasks:list'))
 
 
-class EditTask(View):
-
-    def get(self, request, task_id):
-        try:
-            task = models.Task.objects.get(pk=task_id)
-        except models.Task.DoesNotExist:
-            return redirect(reverse('tasks:list'))
-
-        form = forms.EditTaskForm(data={'title': task.title, 'description': task.description, 'date': task.date})
-        return render(request, 'tasks/edit-task.html', {'form': form})
-
-    def post(self, request, task_id):
-        form = forms.EditTaskForm(request.POST)
-
-        if form.is_valid():
-            try:
-                task = models.Task.objects.get(pk=task_id)
-            except models.Task.DoesNotExist:
-                return redirect(reverse('tasks:list'))
-            else:
-                task.date = form.cleaned_data.get('date')
-                task.title = form.cleaned_data.get('title')
-                task.description = form.cleaned_data.get('description')
-
-                task.save()
-                return redirect(reverse('tasks:list'))
-
-        return render(request, 'tasks/edit-task.html', {'form': form})
+class EditTask(LoginRequiredMixin, TaskCreatorRequiredMixin, UpdateView):
+    template_name = 'tasks/edit-task.html'
+    model = Task
+    form_class = EditTaskForm
+    success_url = reverse_lazy('tasks:list')
+    login_url = reverse_lazy('users:login')
 
 
-class DeletePastTasks(View):
+class DeletePastTasks(LoginRequiredMixin, View):
+    login_url = reverse_lazy('users:login')
 
     def get(self, request):
-        if request.user.is_authenticated:
-            tasks = models.Task.objects.filter(date__lt=datetime.date.today(), user=request.user)
+        tasks = Task.objects.filter(date__lte=datetime.date.today(), user=request.user)
 
-            tasks.delete()
-            return redirect(reverse('tasks:list'))
+        tasks.delete()
+        return redirect(reverse('tasks:list'))
 
-        return redirect(reverse('users:login'))
+
+class MarkAsDone(LoginRequiredMixin, TaskCreatorRequiredMixin, View):
+    login_url = reverse_lazy('users:login')
+
+    def get(self, request, pk):
+        task = Task.objects.get(user=request.user, pk=pk)
+        task.is_done = True
+        task.save()
+        return redirect(reverse('tasks:list'))
+
+
+class DeleteDoneTasks(LoginRequiredMixin, View):
+    login_url = reverse_lazy('users:login')
+
+    def get(self, request):
+        tasks = Task.objects.filter(is_done=True, user=request.user)
+
+        tasks.delete()
+        return redirect(reverse('tasks:list'))
