@@ -5,10 +5,11 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 
-from tasks.forms import AddTaskForm
+from tasks.forms import AddTaskForm, EditTaskForm
 from tasks.models import Task
+from tasks.permissions import TaskCreatorRequiredMixin
 
 
 class AddTask(LoginRequiredMixin, CreateView):
@@ -43,46 +44,25 @@ class DisplayTasks(LoginRequiredMixin, ListView):
         return context
 
 
-class DeleteTask(View):
+class DeleteTask(LoginRequiredMixin, TaskCreatorRequiredMixin, View):
 
-    def get(self, request, task_id):
+    def get(self, request, pk):
         try:
-            task = models.Task.objects.get(pk=int(task_id))
-        except models.Task.DoesNotExist:
+            task = Task.objects.get(pk=int(pk))
+        except Task.DoesNotExist:
             return redirect(reverse('tasks:list'))
         else:
             task.delete()
             return redirect(reverse('tasks:list'))
 
 
-class EditTask(View):
+class EditTask(LoginRequiredMixin, TaskCreatorRequiredMixin, UpdateView):
 
-    def get(self, request, task_id):
-        try:
-            task = models.Task.objects.get(pk=task_id)
-        except models.Task.DoesNotExist:
-            return redirect(reverse('tasks:list'))
-
-        form = forms.EditTaskForm(data={'title': task.title, 'description': task.description, 'date': task.date})
-        return render(request, 'tasks/edit-task.html', {'form': form})
-
-    def post(self, request, task_id):
-        form = forms.EditTaskForm(request.POST)
-
-        if form.is_valid():
-            try:
-                task = models.Task.objects.get(pk=task_id)
-            except models.Task.DoesNotExist:
-                return redirect(reverse('tasks:list'))
-            else:
-                task.date = form.cleaned_data.get('date')
-                task.title = form.cleaned_data.get('title')
-                task.description = form.cleaned_data.get('description')
-
-                task.save()
-                return redirect(reverse('tasks:list'))
-
-        return render(request, 'tasks/edit-task.html', {'form': form})
+    template_name = 'tasks/edit-task.html'
+    model = Task
+    form_class = EditTaskForm
+    success_url = reverse_lazy('tasks:list')
+    login_url = reverse_lazy('users:login')
 
 
 class DeletePastTasks(View):

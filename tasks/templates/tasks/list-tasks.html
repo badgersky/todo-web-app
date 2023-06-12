@@ -19,11 +19,11 @@
                 {{ task.description }}
             </div>
             {% if today >= task.date %}
-                <a href="{% url 'tasks:delete' task_id=task.id %}">
+                <a href="{% url 'tasks:delete' pk=task.id %}">
                     <button class="badge bg-danger">Delete</button>
                 </a>
             {% endif %}
-            <a href="{% url 'tasks:edit' task_id=task.id %}">
+            <a href="{% url 'tasks:edit' pk=task.id %}">
                 <button class="badge bg-danger">Edit</button>
             </a>
             <a>
