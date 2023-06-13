@@ -66,7 +66,7 @@ class DeletePastTasks(LoginRequiredMixin, View):
     login_url = reverse_lazy('users:login')
 
     def get(self, request):
-        tasks = Task.objects.filter(date__lte=datetime.date.today(), user=request.user)
+        tasks = Task.objects.filter(date__lt=datetime.date.today(), user=request.user)
 
         tasks.delete()
         return redirect(reverse('tasks:list'))
