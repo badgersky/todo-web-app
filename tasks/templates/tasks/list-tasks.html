@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block title %}
-    page_obj
+    Tasks {{ page_obj.number }}
 {% endblock %}
 
 {% block content %}
 
     <a href="{% url 'tasks:delete-past' %}" class="me-2">
-        <button type="button" class="btn btn-danger mt-3">Delete Past and Today Tasks</button>
+        <button type="button" class="btn btn-danger mt-3">Delete Past Tasks</button>
     </a>
     <a href="{% url 'tasks:delete-done' %}" class="ms-2">
         <button type="button" class="btn btn-danger mt-3">Delete Done Tasks</button>

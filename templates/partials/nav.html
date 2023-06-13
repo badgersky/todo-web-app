@@ -34,7 +34,7 @@
                 {% endif %}
             </ul>
             {% if user.is_authenticated %}
-                <span class="navbar-text text-light">Logged in</span>
+                <span class="navbar-text text-light">Logged in as {{ user.username }}</span>
             {% endif %}
         </div>
     </div>
